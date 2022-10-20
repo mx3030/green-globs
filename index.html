@@ -4,92 +4,143 @@
 <head>
         <title>Green Globs</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-		<!--<script src="navigation.js"></script>-->
+        <!--<script src="navigation.js"></script>-->
+        <link rel="stylesheet" href="style.css">
+        <link href='https://fonts.googleapis.com/css?family=Open+Sans:300' rel='stylesheet' type='text/css'>
 </head>
 
 <body>
-    <div>
-        <h1>Green Globs</h1>
-        <p>Lösche die grünen Punkte, indem du sie mit Funktionen überdeckst. Du darfst konstante, lineare und quadratische Funktionen vewenden. Für jede verwendete Funktion erhälst du einen Punkt. Am Ende aller 20 Level werden die Punkte zusammengezählt. Dabei gilt je weniger Punkte desto besser.</p>
+    <div class=first>
 
+        <!--<h1>Green Globs</h1>-->
+        <!--<p>Lösche die grünen Punkte, indem du sie mit Funktionen überdeckst. Du darfst konstante, lineare und quadratische Funktionen vewenden. Für jede verwendete Funktion erhälst du einen Punkt. Am Ende aller 20 Level werden die Punkte zusammengezählt. Dabei gilt je weniger Punkte desto besser.</p>-->
+        <div class=container>  
+            <div class=ggb_container>
+                <div class="ggb" id="applet_container"></div>
+            </div>
+            <div class=input>
+                <form class=input_function action="" onsubmit="evalInput(inputField.value);inputField.value='';return false" autocomplete="off"> 
+                    <!--<input type="text" name="inputField" size="30">-->
+                    <div class="input_container">
+                        <fieldset>
+                            <form action="">
+                                <input type="text" name="inputField" class="ghost-input" placeholder="Funktion" required>
+                            </form>
+                        </fieldset>
+                    </div>
+                </form>
+                <div class=text_value_container>
+                    <div class=text_container>
+                        <p>Versuche</p>
+                    </div>                        
+                    <div class=value_container>
+                        <p id="counter">0</p>
+                    </div>
+                </div>
+                <div class=text_value_container>
+                    <div class=text_container>
+                        <p>Punkte</p>
+                    </div>                        
+                    <div class=value_container>
+                        <p id="points">0</p>
+                    </div>
+                </div> 
+            </div>
+        </div> 
+        
         <script type="text/javascript" src="https://cdn.geogebra.org/apps/deployggb.js"></script>
         <script type="text/javascript">
 
-                var parameters = {"id":"app","prerelease":false,"width":600,"height":450,"showToolBar":false,"borderColor":null,"showMenuBar":false,"showAlgebraInput":false,
-				"showResetIcon":true,"enableLabelDrags":false,"enableShiftDragZoom":true,"enableRightClick":false,"capturingThreshold":null,"showToolBarHelp":false,
+            var parameters = {"id":"app","width":"800","height":"600","prerelease":false,"showToolBar":false,"borderColor":null,"showMenuBar":false,"showAlgebraInput":false,
+				"showResetIcon":false,"enableLabelDrags":false,"enableShiftDragZoom":true,"enableRightClick":false,"capturingThreshold":null,"showToolBarHelp":false,
 				"errorDialogsActive":true,"useBrowserForJS":true};
 
-                var applet = new GGBApplet('5.0', parameters);
-              
-                //when used with Math Apps Bundle, uncomment this:
-                //applet.setHTML5Codebase('GeoGebra/HTML5/5.0/webSimple/');
-
-                window.onload = function() {
-                        applet.inject('applet_container');
-                        }
-
-                function ggbOnInit() {
-                    app.setLabelVisible(app.evalCommandGetLabels("(0,2)"),false);
-                    app.evalCommand("(1,4)");
-                    app.evalCommand("(2,-4)");
-                    app.evalCommand("(5,2)");
-                    app.evalCommand("(1,1)");
-                    app.evalCommand("(-2,3)");
-                    app.evalCommand("(-1,-6)");
-                    app.evalCommand("(-2,-1)");
-                    app.evalCommand("(1,2)");
+            var applet = new GGBApplet('5.0', parameters);
+          
+            //when used with Math Apps Bundle, uncomment this:
+            //applet.setHTML5Codebase('GeoGebra/HTML5/5.0/webSimple/');
+            window.onload = function() {
+                    applet.inject('applet_container');
+            }   
+            var globs_number=getRandomInt(5,15);
+            var counter_value=0;
+            var points_ges=0;
+            function ggbOnInit() {
+                app.setCoordSystem(-5.5,5.5,-5.5,5.5);
+                app.setGridVisible(true);
+                // generate random points        
+                var min_pos = -5;
+                var max_pos = 5;
+                for (var i=0;i<globs_number;i++){
+                    var label = app.evalCommandGetLabels("A_"+i+"=("+getRandomInt(min_pos,max_pos)+","+getRandomInt(min_pos,max_pos)+")");
+                    app.setLabelVisible(label,false);
                 }
-
-
-        </script>
-
-        <div id="applet_container"></div>
-	
-        <script type="text/javascript">
-
+            }
+            
             function checkInput(strInput) {
                 // check if input is valid
-                var division = "d=Division("+strInput+",x^3)";
-                app.evalCommand(division);
-                app.setVisible("d",false);
-                app.evalCommand("dd=d(1)");
-                app.setVisible("dd",false);
-                var check = app.getValueString("dd").replace( /^\D+/g, '');
-                if (check == '' || check == 1) {
-                    console.log("Falsche Eingabe.");
-                    return false;
+                if (strInput.includes("x")){
+                    var division = "d=Division("+strInput+",x^3)";
+                    console.log(app.evalCommand(division));
+                    app.setVisible("d",false);
+                    console.log(app.evalCommand("dd=d(1)"));
+                    app.setVisible("dd",false);
+                    var check = app.getValueString("dd").replace( /^\D+/g, '');
+                    if (check == '' || check >=1) {
+                        console.log("Falsche Eingabe.");
+                        return false;
+                    } else {
+                        console.log("Passt.");
+                        return true;
+                    }
                 } else {
-                    console.log("Passt");
                     return true;
                 }
             }
 
             function evalInput(strInput) {
-                // execute function if valid
+                // execute function if valid and update counter
                 if (checkInput(strInput)==true){
-                    // draw function
-                    app.evalCommand(strInput);
-                    update_counter();
-                    // delete globs if hit
+                    var counter = document.getElementById("counter");
+                    counter_value = counter.innerHTML;
+                    app.evalCommand("f_"+counter_value+"(x)="+strInput);
+                    var counter_int_value = parseInt(counter.innerHTML);
+                    counter.innerHTML=counter_int_value+1;
+                    delete_globs(counter_int_value);
                 }
                 return false;
             }
 
-            function update_counter() {
-                // update counter by checking field value
-                var counter= document.getElementById("counter");
-                var counter_value = parseInt(counter.innerHTML);
-                counter.innerHTML=counter_value+1;
-            }
+            <!--function update_counter() {-->
+                <!--// update counter by checking field value-->
+                <!--var counter= document.getElementById("counter");-->
+                <!--var counter_value = parseInt(counter.innerHTML);-->
+                <!--counter.innerHTML=counter_value+1;-->
+                <!--}-->
 
-            function delete_globs(){
-                
+            function delete_globs(function_number){
+                var hit_counter = -1;
+                for (var i=0;i<globs_number;i++){
+                    var distance = app.getValue("Distance(f_"+function_number+",A_"+i+")");
+                    if(distance==0){
+                        hit_counter+=1;
+                        app.setVisible("A_"+i,false);
+                    }
+                }
+                if (hit_counter>=0){
+                    points_ges+=2**hit_counter;
+                }
+                var points_element = document.getElementById("points");
+                points_element.innerHTML=points_ges;
+            } 
+
+            function getRandomInt(min, max) {
+                min = Math.ceil(min);
+                max = Math.floor(max);
+                return Math.floor(Math.random() * (max - min + 1)) + min;
             }
-        </script> 
-        <form action="" onsubmit="evalInput(inputField.value);inputField.value='';return false"> 
-        Funktion: <input type="text" name="inputField" size="30">  
-        </form>
-        <textarea name="counter" id="counter" size="10">0</textarea>      
+        </script>
+ 
     </div>
 </body>
 
